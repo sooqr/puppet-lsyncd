@@ -81,7 +81,7 @@ initSync = {
             error("Missing 'syncid' parameter.", 4)
         end
         local c = "csync2_" .. config.syncid .. ".cfg"
-        local f, err = io.open("<%= scope['lsyncd::params::cfg_path'] %>" .. c, "r")
+        local f, err = io.open("<%= scope['csync2::params::config_main_path'] %>/" .. c, "r")
         if not f then
             error("Invalid 'syncid' parameter: " .. err, 4)
         end
@@ -90,8 +90,15 @@ initSync = {
 }
 
 local sources = {
-<% @lsyncd_csync2_sources.sort_by {|key, value| key}.each do |key,value| -%>
+<% if @lsyncd_csync2_sources != nil %>
+  <%@lsyncd_csync2_sources.sort_by {|key, value| key}.each do |key,value| -%>
     ["<%= key %>"] = "<%= value %>",
+  <% end -%>
+<% end -%>
+<% if @csync2_sources != nil %>
+  <% @csync2_sources.sort_by {|key, value| key}.each do |key,value| -%>
+    ["<%= key %>"] = "<%= value %>",
+  <% end -%>
 <% end -%>
 }
 for key, value in pairs(sources) do
